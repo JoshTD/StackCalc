@@ -3,7 +3,9 @@ public class Compf extends Stack {
     protected final static int SYM_LEFT  = 0,
                                SYM_RIGHT = 1,
                                SYM_OPER  = 2,
-                               SYM_OTHER = 3;
+                               SYM_OTHER = 3,
+                                SYM_LBRACKET = 4,
+                                SYM_RBRACKET = 5;
     private int symType(char c) {
         switch (c) {
             case '(':
@@ -15,6 +17,10 @@ public class Compf extends Stack {
             case '*':
             case '/':
                 return SYM_OPER;
+            case '[':
+                return SYM_LBRACKET;
+            case ']':
+                return SYM_RBRACKET;
             default:
                 return symOther(c);
         }
@@ -36,6 +42,17 @@ public class Compf extends Stack {
             case SYM_OTHER:
                 nextOther(c);
                 break;
+            case SYM_LBRACKET:
+                push(c);
+                Calc.check = false;
+                Calc.count++;
+                break;
+            case SYM_RBRACKET:
+                processSuspendedSymbols(c);
+                pop();
+                Calc.check = false;
+                Calc.count--;
+                break;
         }
     }
     private void processSuspendedSymbols(char c) {
@@ -46,8 +63,8 @@ public class Compf extends Stack {
         return c == '+' || c == '-' ? 1 : 2;
     }
     private boolean precedes(char a, char b) {
-        if(symType(a) == SYM_LEFT) return false;
-        if(symType(b) == SYM_RIGHT) return true;
+        if(symType(a) == SYM_LEFT || symType(a) == SYM_LBRACKET) return false;
+        if(symType(b) == SYM_RIGHT || symType(b) == SYM_RBRACKET) return true;
         return priority(a) >= priority(b);
     }
     protected int symOther(char c) {

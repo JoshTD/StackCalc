@@ -1,5 +1,6 @@
 public class Calc extends Compf {
     public static boolean check = false;
+    public static int count = 0;
     private StackInt s;
     private static int char2int(char c) {
         return (int)c - (int)'0';
@@ -26,9 +27,11 @@ public class Calc extends Compf {
         }
     }
     protected void nextOther(char c) {
-        s.push(char2int(c));
+        s.push(char2int(c) * (int)Math.pow(2, count));
         if (check) checkNum();
         if (!check) check = true;
+
+
     }
     public Calc() {
         s = new StackInt();
